@@ -39,7 +39,7 @@ fn coord_resolver(img_width: u32, img_height: u32, plot_space: PlotSpace) -> Box
     Box::new(move|img_x: u32, img_y: u32| {
         Point {
             x: (plot_space.width * img_x as f64 / (img_width as f64)) + plot_space.origin.x,
-            y: (plot_space.height * img_y as f64 / (img_height as f64)) + plot_space.origin.y
+            y: -(plot_space.height * img_y as f64 / (img_height as f64)) - plot_space.origin.y
         }
     })
 }
