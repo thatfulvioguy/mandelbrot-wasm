@@ -1,0 +1,7 @@
+[package]
+name = "mandelwhit"
+version = "0.1.0"
+authors = ["ThatFulvioGuy"]
+
+[dependencies]
+image = "0.17.0"
