@@ -1,8 +1,6 @@
 
-use super::{PointPainter, BLACK, WHITE};
+use colour::{PointPainter, BLACK, WHITE};
 use point::Point;
-
-use image::Rgb;
 
 pub fn sin_painter(margin: f64) -> Box<PointPainter> {
     Box::new(move |p: Point| {

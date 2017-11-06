@@ -6,7 +6,7 @@ extern crate chrono;
 mod point;
 mod sin_paint;
 mod mandelbrot_paint;
-mod as_hex;
+mod colour;
 
 use point::{Point, PlotSpace, point_resolver};
 use mandelbrot_paint::paint_mandelbrot;
@@ -17,7 +17,7 @@ use std::fs::File;
 use std::path::Path;
 use std::time::Instant;
 
-use image::{Rgb, RgbImage, ColorType};
+use image::{RgbImage, ColorType};
 
 fn save(img: &RgbImage, path: &str) {
     let save_start = Instant::now();
@@ -43,14 +43,9 @@ fn print_time_since(start: Instant, desc: &str) {
     }
 }
 
-type PointPainter = Fn(Point) -> Rgb<u8>;
-
-const BLACK: Rgb<u8> = Rgb { data: [0x00, 0x00, 0x00] };
-const WHITE: Rgb<u8> = Rgb { data: [0xff, 0xff, 0xff] };
-
 fn main() {
-    let (width, height) = (960, 960);
-    let ss_scale = 4;
+    let (width, height) = (480, 480);
+    let ss_scale = 2;
 
     let mut img = RgbImage::new(width * ss_scale, width * ss_scale);
     //let plot_space = PlotSpace::with_centre(point::ORIGIN, 2.0 * f64::consts::PI, f64::consts::PI);
@@ -63,12 +58,10 @@ fn main() {
 
     let plot_start = Instant::now();
 
-    let mut n = 0;
-
-    for (x, y, px) in img.enumerate_pixels_mut() {
+    for (n, (x, y, px)) in (1..).zip(img.enumerate_pixels_mut()) {
         let point = resolve_point(x, y);
         *px = paint_point(point);
-        n += 1;
+
         if n % (total_pixels / 200).max(1) == 0 {
             use std::io::Write;
             print!("\rPlotting: {:2.1}%", 100.0 * n as f64 / total_pixels as f64);
