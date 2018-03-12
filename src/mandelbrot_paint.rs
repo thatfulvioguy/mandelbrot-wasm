@@ -5,10 +5,12 @@ use point::Point;
 use image::Rgb;
 use complex::Complex;
 
+const MAX_ITERS: u32 = 200;
+
 fn is_mandelbrot(c: Complex) -> bool {
     let mut z = c;
 
-    for _iteration in 0..500 {
+    for _iteration in 0..MAX_ITERS {
         // TODO further research on this part
         if (z.re * z.re) + (z.im * z.im) > 4.0 { // If |z| > 2, but without expensive sqrt
             return false;
