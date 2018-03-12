@@ -44,11 +44,7 @@ pub extern "C" fn plot_mandelbrot(width: u32, height: u32, ss_scale: u32, centre
 
     for (n, (x, y, px)) in (1..).zip(img.enumerate_pixels_mut()) {
         let point = resolve_point(x, y);
-        use mandelbrot_paint::paint_mandelbrot2;
-        use image::Rgb;
-        let upx = paint_mandelbrot2(point);
-        *px = Rgb([((upx & 0xff0000) >> 16) as u8, ((upx & 0x00ff00) >> 8) as u8, (upx & 0x0000ff) as u8]);
-        //*px = paint_point(point);
+        *px = paint_point(point);
 
         if n % (total_pixels / 20).max(1) == 0 {
             println!("Plotting: {:2.1}%", 100.0 * n as f64 / total_pixels as f64);

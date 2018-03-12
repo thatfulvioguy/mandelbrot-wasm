@@ -27,11 +27,3 @@ pub fn paint_mandelbrot(p: Point) -> Rgb<u8> {
         WHITE
     }
 }
-
-pub fn paint_mandelbrot2(p: Point) -> u32 {
-    if is_mandelbrot(Complex::new(p.x, p.y)) {
-        (0x00 << 16) | (0x00 << 8) | (0x00)
-    } else {
-        (0xff << 16) | (0xff << 8) | (0xff)
-    }
-}
