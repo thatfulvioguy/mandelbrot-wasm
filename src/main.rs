@@ -1,11 +1,11 @@
 
 extern crate image;
-extern crate num;
 
 mod point;
 mod sin_paint;
 mod mandelbrot_paint;
 mod colour;
+mod complex;
 
 use point::{Point, PlotSpace, point_resolver};
 use mandelbrot_paint::paint_mandelbrot;

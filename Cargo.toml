@@ -6,7 +6,6 @@ publish = false
 
 [dependencies]
 image = "0.17"
-num = "0.1"
 
 [profile.dev]
 opt-level = 1
