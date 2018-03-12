@@ -1,7 +1,6 @@
 
 extern crate image;
 extern crate num;
-extern crate chrono;
 
 mod point;
 mod sin_paint;
@@ -18,13 +17,9 @@ use std::time::Instant;
 use image::{RgbImage, ColorType};
 
 fn print_time_since(start: Instant, desc: &str) {
-    let duration = chrono::Duration::from_std(start.elapsed()).ok();
-    let duration_micros = duration.and_then(|duration| duration.num_microseconds());
-    if let Some(micros) = duration_micros {
-        println!("{} took {:.2}ms", desc, micros as f64 / 1000.0)
-    } else {
-        println!("{} took too long, somehow", desc)
-    }
+    let elapsed = start.elapsed();
+    let elapsed_micros = (elapsed.as_secs() * 1_000_000) as f64 + (elapsed.subsec_nanos() / 1000) as f64;
+    println!("{} took {:.2}ms", desc, elapsed_micros / 1000.0)
 }
 
 #[cfg(target_arch="wasm32")]
