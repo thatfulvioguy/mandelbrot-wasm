@@ -1,15 +1,10 @@
 
+extern crate mandelbrot;
 extern crate image;
-extern crate num;
 
-mod point;
-mod sin_paint;
-mod mandelbrot_paint;
-mod colour;
-
-use point::{Point, PlotSpace, point_resolver};
-use mandelbrot_paint::paint_mandelbrot;
-use sin_paint::sin_painter;
+use mandelbrot::point::{Point, PlotSpace, point_resolver};
+use mandelbrot::mandelbrot_paint::paint_mandelbrot;
+use mandelbrot::sin_paint::sin_painter;
 
 use std::f64;
 use std::time::Instant;
@@ -21,79 +16,6 @@ fn print_time_since(start: Instant, desc: &str) {
     let elapsed_micros = (elapsed.as_secs() * 1_000_000) as f64 + (elapsed.subsec_nanos() / 1000) as f64;
     println!("{} took {:.2}ms", desc, elapsed_micros / 1000.0)
 }
-
-#[cfg(target_arch="wasm32")]
-fn main() {
-    // Blank main required for wasm and asm.js
-    // TODO check if that's still the case, especially if compiled as lib rather than binary
-}
-
-#[cfg(target_arch="wasm32")]
-#[no_mangle]
-pub extern "C" fn plot_mandelbrot(width: u32, height: u32, ss_scale: u32, centre_x: f64, centre_y: f64, plot_width: f64, plot_height: f64) -> *mut RgbImage {
-    let mut img = RgbImage::new(width * ss_scale, width * ss_scale);
-    let plot_space = PlotSpace::with_centre(Point::new(centre_x, centre_y), plot_width, plot_height);
-    let resolve_point = point_resolver(img.width(), img.height(), plot_space);
-
-    //let paint_point = sin_painter(0.05);
-    let paint_point = paint_mandelbrot;
-
-    let total_pixels = img.width() * img.height();
-
-    let plot_start = Instant::now();
-
-    for (n, (x, y, px)) in (1..).zip(img.enumerate_pixels_mut()) {
-        let point = resolve_point(x, y);
-        use mandelbrot_paint::paint_mandelbrot2;
-        use image::Rgb;
-        let upx = paint_mandelbrot2(point);
-        *px = Rgb([((upx & 0xff0000) >> 16) as u8, ((upx & 0x00ff00) >> 8) as u8, (upx & 0x0000ff) as u8]);
-        //*px = paint_point(point);
-
-        if n % (total_pixels / 20).max(1) == 0 {
-            println!("Plotting: {:2.1}%", 100.0 * n as f64 / total_pixels as f64);
-        }
-    }
-
-    print_time_since(plot_start, "Plotting");
-
-    let final_img = if ss_scale > 1 {
-        let resize_start = Instant::now();
-
-        let resized_img = image::imageops::resize(&img, width, height, image::FilterType::Triangle);
-
-        print_time_since(resize_start, "Resizing");
-
-        resized_img
-    } else {
-        img
-    };
-
-    Box::into_raw(Box::new(final_img))
-}
-
-#[cfg(target_arch="wasm32")]
-#[no_mangle]
-pub extern "C" fn image_bytes_ptr(img_ptr: *mut RgbImage) -> *mut u8 {
-    let img = unsafe { &mut *img_ptr };
-    // ImageBuffer gives you the slice by implementing Deref, when it really shouldn't
-    // You can get bytes_ptr by just doing img.as_mut_ptr() but it's best to illustrate this weird API design decision
-    let img_bytes_slice = &mut (**img);
-    let bytes_ptr = img_bytes_slice.as_mut_ptr();
-
-    bytes_ptr
-}
-
-#[cfg(target_arch="wasm32")]
-#[no_mangle]
-pub extern "C" fn destroy_image(img_ptr: *mut RgbImage) {
-    println!("Goodbye, {:?}", img_ptr);
-
-    unsafe {
-        Box::from_raw(img_ptr);
-    }
-}
-
 
 #[cfg(not(target_arch="wasm32"))]
 fn save(img: &RgbImage, path: &str) {
@@ -153,4 +75,9 @@ fn main() {
     print_time_since(resize_start, "Resizing");
 
     save(&resized_img, "test.png");
+}
+
+#[cfg(target_arch="wasm32")]
+fn main() {
+
 }
