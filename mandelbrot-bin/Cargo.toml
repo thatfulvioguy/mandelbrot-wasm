@@ -1,0 +1,8 @@
+[package]
+name = "mandelbrot-bin"
+version = "0.1.0"
+authors = ["Fulvio Valente <fulvio.valente@ncr.com>"]
+
+[dependencies]
+mandelbrot = { path = "../" }
+image = "0.17"

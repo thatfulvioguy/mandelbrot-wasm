@@ -14,7 +14,15 @@ const IMPORTS = {
   }
 }
 
-fetch('mandelbrot.wasm')
+const DEFAULTS = {
+  ssScale: 1,
+  centreX: -2.0/3.0,
+  centreY: 0.0,
+  plotWidth: 2.5,
+  plotHeight: 2.5
+}
+
+fetch('mandelbrot_wasm.wasm')
   .then(response => response.arrayBuffer())
   .then(bytes => WebAssembly.instantiate(bytes, IMPORTS))
   .then(wasm => {
@@ -38,13 +46,7 @@ fetch('mandelbrot.wasm')
         centreY,
         plotWidth,
         plotHeight
-      } = Object.assign({
-        ssScale: 1,
-        centreX: -2.0/3.0,
-        centreY: 0.0,
-        plotWidth: 2.5,
-        plotHeight: 2.5
-      }, options)
+      } = Object.assign({}, DEFAULTS, options)
 
       plottingWait.style.display = 'block'
 
