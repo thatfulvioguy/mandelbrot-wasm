@@ -1,0 +1,24 @@
+{
+  "name": "mandelbrot-web",
+  "version": "0.1.0",
+  "description": "",
+  "main": "src/bootstrapper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./build.sh"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "linkstate": "^1.1.1",
+    "preact": "^8.2.7"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.2.2",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-preact": "^1.1.0",
+    "eslint": "^4.18.2",
+    "eslint-plugin-react": "^7.7.0",
+    "parcel-bundler": "^1.6.2"
+  }
+}
