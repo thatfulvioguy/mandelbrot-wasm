@@ -13,8 +13,11 @@
           "safari >= 11",
           "ios_saf >= 11"
         ]
-      }
+      },
+      "modules": false, // as in, "don't transform module syntax" - so webpack can tree-shake
+      "useBuiltIns": "usage"
     }],
     "preact"
-  ]
+  ],
+  "plugins": ["syntax-dynamic-import"]
 }
