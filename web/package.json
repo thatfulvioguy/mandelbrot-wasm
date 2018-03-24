@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./build.sh"
+    "build": "./build.sh",
+    "start": "webpack-dev-server --hot --mode development"
   },
   "author": "",
   "license": "ISC",
@@ -26,6 +27,7 @@
     "mini-css-extract-plugin": "^0.2.0",
     "parcel-bundler": "^1.6.2",
     "webpack": "^4.2.0",
-    "webpack-cli": "^2.0.13"
+    "webpack-cli": "^2.0.13",
+    "webpack-dev-server": "^3.1.1"
   }
 }

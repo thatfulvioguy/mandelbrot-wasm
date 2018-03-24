@@ -39,5 +39,8 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: 'style.css'
     })
-  ]
+  ],
+  devServer: {
+    contentBase: './dist'
+  }
 }
