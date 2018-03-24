@@ -6,9 +6,11 @@ const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
-  entry: './src/bootstrapper.js',
+  entry: {
+    bootstrapper: './src/bootstrapper.js'
+  },
   output: {
-    filename: 'bootstrapper.js',
+    chunkLoadTimeout: 10000,
     path: path.resolve(__dirname, 'dist')
   },
   module: {
@@ -34,6 +36,8 @@ module.exports = {
     ]
   },
   plugins: [
-    new MiniCssExtractPlugin()
+    new MiniCssExtractPlugin({
+      filename: 'style.css'
+    })
   ]
 }

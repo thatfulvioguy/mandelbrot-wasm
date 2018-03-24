@@ -17,7 +17,7 @@ if (typeof WebAssembly !== 'object') {
 } else {
   // If we have wasm support, then we can assume the promise support necessary for the dynamic import polyfilling
 
-  import('./main')
+  import(/* webpackChunkName: "main" */ './main')
     .then(main => {
       main.start()
     })
