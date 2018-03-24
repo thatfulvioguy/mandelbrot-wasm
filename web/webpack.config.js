@@ -1,7 +1,9 @@
 
+/* eslint-env node */
+
 const path = require('path')
 
-/* eslint-env node */
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
   entry: './src/bootstrapper.js',
@@ -22,14 +24,16 @@ module.exports = {
         }
       },
 
-      // TODO don't inline CSS into the bundle. is it the extract-text plugin we're after?
       {
         test: /\.css$/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           'css-loader'
         ]
       }
     ]
-  }
+  },
+  plugins: [
+    new MiniCssExtractPlugin()
+  ]
 }

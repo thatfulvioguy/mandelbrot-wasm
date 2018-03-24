@@ -2,7 +2,7 @@
 // This bootstrapper checks for compatibility before we know it's ok to load the rest of the app.
 // Crucially, we use no recent language features here so this phase will work even on very old browsers.
 
-import '../css/main.css' // TODO don't include css in the js bundle
+import '../css/main.css'
 
 if (typeof WebAssembly !== 'object') {
   document.getElementById('root').insertAdjacentHTML('afterbegin', `
