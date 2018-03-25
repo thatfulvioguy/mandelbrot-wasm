@@ -3,7 +3,6 @@ set -ex
 
 rm -rf dist/*
 
-#npx parcel build index.html --public-url ./
 npx webpack
 cp src/index.html dist/
 
