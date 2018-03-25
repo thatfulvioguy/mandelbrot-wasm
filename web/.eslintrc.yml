@@ -26,3 +26,7 @@ rules:
     - never
   no-console:
     - off
+  react/no-deprecated:
+    - off # Erroneously complains about preact.render
+  react/prop-types:
+    - off # Not used in preact
