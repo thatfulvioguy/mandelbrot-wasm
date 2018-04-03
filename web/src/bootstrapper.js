@@ -15,8 +15,9 @@ if (typeof WebAssembly !== 'object') {
     </div>
   `)
 } else {
-  // If we have wasm support, then we can assume the promise support necessary for dynamic imports
+  document.getElementById('root').insertAdjacentHTML('afterbegin', '<p>Loading...</p>')
 
+  // If we have wasm support, then we can assume the promise support necessary for dynamic imports
   import(/* webpackChunkName: "main" */ './main')
     .then(main => {
       main.start()

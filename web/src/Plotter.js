@@ -7,7 +7,8 @@ const DEFAULTS = {
   plotHeight: 2.5
 }
 
-export default class Mandelbrot {
+// TODO just return a function?
+export default class Plotter {
 
   constructor(wasmInstance) {
     const exports = wasmInstance.exports
@@ -30,6 +31,10 @@ export default class Mandelbrot {
       plotHeight
     } = Object.assign({}, DEFAULTS, options)
 
+    console.log('plotting!')
+
+    const startTime = Date.now()
+
     const imgPtr = this.wasmIface.plotMandelbrot(width, height, ssScale, centreX, centreY, plotWidth, plotHeight)
     const imgBytesPtr = this.wasmIface.imageBytesPtr(imgPtr)
 
@@ -37,6 +42,9 @@ export default class Mandelbrot {
     const imgBytesCopy = imgBytes.slice(0, imgBytes.length)
 
     this.wasmIface.destroyImage(imgPtr)
+
+    // TODO return an object with image, params, and time
+    console.log(`plotted in ${Date.now() - startTime}ms`)
 
     return imgBytesCopy
   }

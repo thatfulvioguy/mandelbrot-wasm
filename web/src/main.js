@@ -1,8 +1,8 @@
 
 import preact from 'preact'
 
-import Mandelbrot from './Mandelbrot'
-import MandelbrotCanvas from './MandelbrotCanvas'
+import Plotter from './Plotter'
+import MandelbrotForm from './MandelbrotForm'
 
 /** @jsx preact.h */
 
@@ -29,9 +29,9 @@ function loadWasm() {
 export function start() {
   return loadWasm()
     .then(wasmModule => {
-      const mandelbrot = new Mandelbrot(wasmModule.instance)
+      const plotter = new Plotter(wasmModule.instance)
+      const rootElem = document.getElementById('root')
 
-      // TODO solve sizing
-      preact.render(<MandelbrotCanvas imgBytes={mandelbrot.plot({ width: 840, height: 840, ssScale: 2 }) } />, document.getElementById('root'))
+      preact.render(<MandelbrotForm plotter={plotter}/>, rootElem, rootElem.lastElementChild)
     })
 }
