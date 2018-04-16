@@ -1,5 +1,5 @@
 
-// TODO find a better way of not compiling this under not-wasm32
+// TODO find a better way of not compiling -bin for wasm32
 
 #[cfg(target_arch="wasm32")]
 fn main() {
