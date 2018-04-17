@@ -3,7 +3,7 @@ set -ex
 
 rm -rf dist/*
 
-npx webpack --mode production
+webpack --mode production
 cp src/index.html dist/
 
 # TODO do we need to use nightly or not? use a rust-toolchain file if so
