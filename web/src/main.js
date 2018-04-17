@@ -20,7 +20,8 @@ const IMPORTS = {
 }
 
 function loadWasm() {
-  // TODO switch to streaming
+  // TODO use streaming, if present
+  // TODO report loading errors
   return fetch('mandelbrot_wasm.wasm')
     .then(response => response.arrayBuffer())
     .then(bytes => WebAssembly.instantiate(bytes, IMPORTS))

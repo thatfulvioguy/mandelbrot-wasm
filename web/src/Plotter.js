@@ -43,6 +43,8 @@ export default class Plotter {
 
     this.wasmIface.destroyImage(imgPtr)
 
+    // TODO can we copy directly to an ImageData instead of having the caller do it later?
+
     // TODO return an object with image, params, and time
     console.log(`plotted in ${Date.now() - startTime}ms`)
 
