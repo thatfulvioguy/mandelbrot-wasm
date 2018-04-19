@@ -4,11 +4,14 @@ version = "0.1.0"
 authors = ["ThatFulvioGuy"]
 publish = false
 
+[workspace]
+members = ["mandelbrot-bin", "mandelbrot-wasm"]
+
 [dependencies]
 image = "0.17"
 
 [profile.dev]
 opt-level = 1
 
-[workspace]
-members = ["mandelbrot-bin", "mandelbrot-wasm"]
+[profile.release]
+lto = true
