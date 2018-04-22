@@ -75,7 +75,7 @@ function plotImage(params) {
   wasmApi.destroyImage(imagePtr)
 
   return {
-    // None of the types array views are supported by postmessage, only ArrayBuffers
+    // None of the typed array views are supported by postmessage, only ArrayBuffers
     imageBuffer: imageBytesCopy.buffer,
     time: Date.now() - startTime
   }

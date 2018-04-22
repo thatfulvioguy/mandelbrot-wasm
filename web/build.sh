@@ -3,7 +3,7 @@ set -ex
 
 rm -rf dist/*
 
-webpack --mode production
+webpack --mode production --display-modules
 cp src/index.html dist/
 
 cargo build -p mandelbrot-wasm --release --target wasm32-unknown-unknown
