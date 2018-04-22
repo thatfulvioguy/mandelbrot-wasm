@@ -23,36 +23,33 @@ export default class MandelbrotCanvas extends preact.Component {
 
   plot = (params) => {
     this.setState({
-      status: STATUSES.PLOTTING,
-      lastPlot: {params}
+      status: STATUSES.PLOTTING
     })
 
-    // TODO async
-    setTimeout(() => {
-      const imageSize = params.imageWidth
-      const plotSize = params.plotWidth
+    const imageSize = params.imageWidth
+    const plotSize = params.plotWidth
 
-      const imageBytes = this.props.plotter.plot({
-        width: imageSize,
-        height: imageSize,
-        centreX: params.plotCentreX,
-        centreY: params.plotCentreY,
-        plotWidth: plotSize,
-        plotHeight: plotSize
+    const plotResult = this.props.plotter.plot({
+      width: imageSize,
+      height: imageSize,
+      centreX: params.plotCentreX,
+      centreY: params.plotCentreY,
+      plotWidth: plotSize,
+      plotHeight: plotSize
+    })
+
+    return plotResult
+      .then(plotResult => {
+        this.setState({
+          status: STATUSES.PLOTTED,
+          lastPlot: {
+            params,
+            imageBytes: new Uint8Array(plotResult.imageBuffer)
+          }
+        })
+
+        console.log(`plotted in ${plotResult.time}ms`)
       })
-      // const imageBytes = []
-
-      this.setState((prevState) => ({
-        status: STATUSES.PLOTTED,
-        lastPlot: {
-          ...prevState.lastPlot,
-          imageBytes
-        }
-      }))
-
-      // 11ms seems to be the minimum to get the plotting state change to be visible
-      // This won't matter once proper async plotting is in place
-    }, 11)
   }
 
   repaintCanvasIfNeeded = () => {

@@ -6,18 +6,22 @@ import MandelbrotCanvas from './MandelbrotCanvas'
 
 /** @jsx preact.h */
 
-const DEFAULTS = {
+const FORM_DEFAULTS = {
   imageWidth: 720,
   plotWidth: 2.5,
   plotCentreX: -0.66,
-  plotCentreY: 0
+  plotCentreY: 0,
 }
 
 export default class MandelbrotForm extends preact.Component {
 
   constructor(props) {
     super(props)
-    this.state = DEFAULTS
+    this.state = {
+      ...FORM_DEFAULTS,
+
+      awaitingPlot: false
+    }
     this.inputs = {}
     this.canvas = null
   }
@@ -35,12 +39,28 @@ export default class MandelbrotForm extends preact.Component {
       return
     }
 
-    console.log(`plot: ${JSON.stringify(this.state)}`)
-    this.canvas.plot({ ...this.state })
+    const plotOptions = {
+      imageWidth: this.state.imageWidth,
+      plotWidth: this.state.plotWidth,
+      plotCentreX: this.state.plotCentreX,
+      plotCentreY: this.state.plotCentreY,
+    }
+
+    console.log(`plot: ${JSON.stringify(plotOptions)}`)
+
+    this.setState({ awaitingPlot: true })
+
+    this.canvas.plot(plotOptions)
+      .then(() => {
+        this.setState({ awaitingPlot: false })
+      })
+      .catch(() => {
+        // TODO show error
+        this.setState({ awaitingPlot: false })
+      })
   }
 
-  render({ plotter }, { imageWidth, plotWidth, plotCentreX, plotCentreY }) {
-    console.log(`rendering form with state: ${JSON.stringify(this.state)}`)
+  render({ plotter }, { imageWidth, plotWidth, plotCentreX, plotCentreY, awaitingPlot }) {
     // TODO ss scale
     // TODO proper layout - no p, no explicit space
     return <div>
@@ -58,7 +78,7 @@ export default class MandelbrotForm extends preact.Component {
         <NumberInput label="Plot centre y" value={plotCentreY} step={0.0001}
           onChange={this.changeHandler('plotCentreY')} ref={(input) => this.inputs.plotCentreY = input}/>
       </p>
-      <button disabled={!this.isValid()} onClick={this.plotIfValid}>Plot Mandelbrot</button>
+      <button disabled={!this.isValid() || awaitingPlot} onClick={this.plotIfValid}>Plot Mandelbrot</button>
 
       <hr/>
 
