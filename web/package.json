@@ -12,24 +12,24 @@
   "license": "ISC",
   "dependencies": {
     "linkstate": "^1.1.1",
-    "preact": "^8.2.7"
+    "preact": "^8.2.9"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.3",
-    "babel-loader": "^7.1.4",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.6",
+    "babel-loader": "^7.1.5",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "babel-preset-preact": "^1.1.0",
     "css-loader": "^0.28.11",
     "eslint": "^4.18.2",
-    "eslint-plugin-react": "^7.7.0",
-    "mini-css-extract-plugin": "^0.4.0",
-    "webpack": "^4.6.0",
-    "webpack-cli": "^2.0.14",
-    "webpack-dev-server": "^3.1.3",
-    "worker-loader": "^1.1.1"
+    "eslint-plugin-react": "^7.10.0",
+    "mini-css-extract-plugin": "^0.4.1",
+    "webpack": "^4.16.1",
+    "webpack-cli": "^2.1.5",
+    "webpack-dev-server": "^3.1.4",
+    "worker-loader": "^2.0.0"
   }
 }
