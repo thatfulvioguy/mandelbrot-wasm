@@ -1,7 +1,8 @@
 
 /* eslint-env: worker */
 
-import MSG_TYPES from './workerMsgTypes'
+import MSG_TYPES from './MessageTypes'
+import onWorkerMessage from './PromiseTransportWorker'
 
 let wasmApi = null
 
@@ -18,34 +19,24 @@ const IMPORTS = {
   }
 }
 
-self.onmessage = (messageEvent) => {
-  const { msgId, type, data } = messageEvent.data
-
+onWorkerMessage((type, data) => {
   if (type === MSG_TYPES.RECEIVE_WASM) {
-    instantiateWasm(data)
-      .then(reply(msgId))
-      .catch(replyError(msgId))
-  } else {
-    if (wasmApi == null) {
-      replyError(msgId)(new Error('WASM module not instantiated yet. Definitely a bug.'))
+
+    return instantiateWasm(data)
+
+  } else if (type === MSG_TYPES.PLOT) {
+    if (wasmApi === null) {
+      return Promise.reject(new Error('WASM module not instantiated yet. Definitely a bug.'))
     }
 
-    try {
+    return new Promise((resolve) => {
       const plot = plotImage(data)
-      reply(msgId)(plot, [plot.imageBuffer])
-    } catch (e) {
-      replyError(msgId)(e)
-    }
+      resolve({ data: plot, transferrables: [plot.imageBuffer] })
+    })
   }
-}
 
-const reply = (msgId) => (data, transferrables) => {
-  self.postMessage({ msgId, data }, transferrables)
-}
-
-const replyError = (msgId) => (error) => {
-  self.postMessage({ msgId, error })
-}
+  return Promise.reject(new Error(`Unrecognised message type: ${type}`))
+})
 
 function instantiateWasm(wasmModule) {
   return WebAssembly.instantiate(wasmModule, IMPORTS)

@@ -1,6 +1,7 @@
 
-import PlotterWorker from 'worker-loader!./PlotterWorker'
-import MSG_TYPES from './workerMsgTypes'
+import PlotterWorker from 'worker-loader!./worker/PlotterWorker'
+import MSG_TYPES from './worker/MessageTypes'
+import PromiseTransportParent from './worker/PromiseTransportParent'
 
 const DEFAULTS = {
   ssScale: 1,
@@ -12,32 +13,10 @@ const DEFAULTS = {
 
 export default class Plotter {
 
-  nextMsgId = 0
-
-  msgsAwaitingReponse = new Map()
+  worker = new PromiseTransportParent(new PlotterWorker())
 
   constructor(wasmModule) {
-    this.worker = new PlotterWorker()
-
-    this.worker.onmessage = (replyMessageEvent) => {
-      const { msgId, data, error } = replyMessageEvent.data
-
-      if (!this.msgsAwaitingReponse.has(msgId)) {
-        console.log(`Got reply for unknown msgId ${msgId}. Seems like a bug.`)
-        return
-      }
-
-      const { resolve, reject } = this.msgsAwaitingReponse.get(msgId)
-      this.msgsAwaitingReponse.delete(msgId)
-
-      if (error !== undefined) {
-        reject(error)
-      } else {
-        resolve(data)
-      }
-    }
-
-    this.wasmInstantiated = this.sendMessage(MSG_TYPES.RECEIVE_WASM, wasmModule)
+    this.wasmInstantiated = this.worker.sendMessage(MSG_TYPES.RECEIVE_WASM, wasmModule)
   }
 
   plot = (options) => {
@@ -45,16 +24,8 @@ export default class Plotter {
 
     return this.wasmInstantiated
       .then(() => {
-        return this.sendMessage(MSG_TYPES.PLOT, params)
+        return this.worker.sendMessage(MSG_TYPES.PLOT, params)
       })
   }
-
-  sendMessage = (type, data) => new Promise((resolve, reject) => {
-    const msgId = this.nextMsgId++
-
-    this.msgsAwaitingReponse.set(msgId, { resolve, reject })
-
-    this.worker.postMessage({ msgId, type, data })
-  })
 
 }
