@@ -6,19 +6,6 @@ import MandelbrotForm from './MandelbrotForm'
 
 /** @jsx preact.h */
 
-const IMPORTS = {
-  env: {
-    expf: Math.exp,
-    sinf: Math.sin,
-    powf: Math.pow,
-    sin: Math.sin,
-    cos: Math.cos,
-    round: Math.round,
-    log2f: Math.log2,
-    exp2f: (n) => Math.pow(2, n)
-  }
-}
-
 function compileWasm() {
   const stream = fetch('mandelbrot_wasm.wasm')
 

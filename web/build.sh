@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
+eslint . --cache --cache-location node_modules/.cache/eslint/
+
 rm -rf dist/*
 
 webpack --mode production --display-modules
