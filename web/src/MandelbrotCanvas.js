@@ -44,7 +44,8 @@ export default class MandelbrotCanvas extends preact.Component {
           status: STATUSES.PLOTTED,
           lastPlot: {
             params,
-            imageBytes: new Uint8Array(plotResult.imageBuffer)
+            imageBytes: new Uint8Array(plotResult.imageBuffer),
+            time: plotResult.time
           }
         })
 
@@ -100,7 +101,10 @@ export default class MandelbrotCanvas extends preact.Component {
       return <p>Plotting...</p>
     } else {
       const imageWidth = lastPlot.params.imageWidth
-      return <canvas ref={(canvas) => this.canvas = canvas} width={imageWidth} height={imageWidth}/>
+      return <div>
+        <p>Plotted in {lastPlot.time}ms</p>
+        <canvas ref={(canvas) => this.canvas = canvas} width={imageWidth} height={imageWidth}/>
+      </div>
     }
   }
 }
