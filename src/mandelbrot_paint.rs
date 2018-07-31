@@ -5,7 +5,7 @@ use point::Point;
 use image::Rgb;
 use complex::Complex;
 
-const MAX_ITERS: u32 = 200;
+const MAX_ITERS: u32 = 512;
 
 use image::Luma;
 use image::Pixel;
