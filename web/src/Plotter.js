@@ -1,5 +1,5 @@
 
-import PlotterWorker from 'worker-loader!./worker/PlotterWorker'
+import PlotterWorker from 'worker-loader?name=plotterWorker.js!./worker/PlotterWorker'
 import MSG_TYPES from './worker/MessageTypes'
 import PromiseTransportParent from './worker/PromiseTransportParent'
 
