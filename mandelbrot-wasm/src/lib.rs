@@ -6,26 +6,22 @@ extern crate image;
 
 use mandelbrot::point::{Point, PlotSpace, point_resolver};
 use mandelbrot::mandelbrot_paint::paint_mandelbrot;
-use mandelbrot::sin_paint::sin_painter;
 
 use image::RgbImage;
 
 #[no_mangle]
-pub extern fn plot_mandelbrot(width: u32, height: u32, ss_scale: u32, centre_x: f64, centre_y: f64, plot_width: f64, plot_height: f64) -> *mut RgbImage {
-    let mut img = RgbImage::new(width * ss_scale, width * ss_scale);
-    let plot_space = PlotSpace::with_centre(Point::new(centre_x, centre_y), plot_width, plot_height);
-    let resolve_point = point_resolver(img.width(), img.height(), plot_space);
-
-    //let paint_point = sin_painter(0.05);
-    let paint_point = paint_mandelbrot;
+pub extern fn plot_mandelbrot(width: u32, height: u32, ss_scale: u32, subimage_height: u32, subimage_top: u32, origin_x: f64, origin_y: f64, plot_width: f64, plot_height: f64) -> *mut RgbImage {
+    let mut img = RgbImage::new(width * ss_scale, subimage_height * ss_scale);
+    let plot_space = PlotSpace::new(Point::new(origin_x, origin_y), plot_width, plot_height);
+    let resolve_point = point_resolver(width * ss_scale, height * ss_scale, plot_space);
 
     for (x, y, px) in img.enumerate_pixels_mut() {
-        let point = resolve_point(x, y);
-        *px = paint_point(point);
+        let point = resolve_point(x, y + subimage_top);
+        *px = paint_mandelbrot(point);
     }
 
     let final_img = if ss_scale > 1 {
-        let resized_img = image::imageops::resize(&img, width, height, image::FilterType::Triangle);
+        let resized_img = image::imageops::resize(&img, width, subimage_height, image::FilterType::Triangle);
 
         resized_img
     } else {

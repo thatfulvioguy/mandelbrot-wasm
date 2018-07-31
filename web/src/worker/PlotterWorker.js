@@ -31,7 +31,7 @@ onWorkerMessage((type, data) => {
 
     return new Promise((resolve) => {
       const plot = plotImage(data)
-      resolve({ data: plot, transferrables: [plot.imageBuffer] })
+      resolve({ data: plot, transferables: [plot.imageBuffer] })
     })
   }
 
@@ -53,14 +53,14 @@ function instantiateWasm(wasmModule) {
 }
 
 function plotImage(params) {
-  const { width, height, ssScale, centreX, centreY, plotWidth, plotHeight } = params
+  const { width, height, ssScale, chunkHeight, chunkTop, originX, originY, plotWidth, plotHeight } = params
 
-  const startTime = Date.now()
+  const startTime = performance.now()
 
-  const imagePtr = wasmApi.plotMandelbrot(width, height, ssScale, centreX, centreY, plotWidth, plotHeight)
+  const imagePtr = wasmApi.plotMandelbrot(width, height, ssScale, chunkHeight, chunkTop, originX, originY, plotWidth, plotHeight)
   const imageBytesPtr = wasmApi.imageBytesPtr(imagePtr)
 
-  const imageBytes = new Uint8Array(wasmApi.memory.buffer, imageBytesPtr, width * height * 3)
+  const imageBytes = new Uint8Array(wasmApi.memory.buffer, imageBytesPtr, width * chunkHeight * 3)
   const imageBytesCopy = imageBytes.slice(0, imageBytes.length)
 
   wasmApi.destroyImage(imagePtr)
@@ -68,6 +68,6 @@ function plotImage(params) {
   return {
     // None of the typed array views are supported by postmessage, only ArrayBuffers
     imageBuffer: imageBytesCopy.buffer,
-    time: Date.now() - startTime
+    time: performance.now() - startTime
   }
 }

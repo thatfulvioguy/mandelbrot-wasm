@@ -21,11 +21,63 @@ export default class Plotter {
 
   plot = (options) => {
     const params = Object.assign({}, DEFAULTS, options)
+    params.originX = params.centreX - (params.plotWidth / 2)
+    params.originY = params.centreY - (params.plotHeight / 2)
 
-    return this.wasmInstantiated
-      .then(() => {
-        return this.worker.sendMessage(MSG_TYPES.PLOT, params)
+    const startTime = performance.now()
+
+    const chunks = partitionPlot(params)
+      .map((chunk) => this.wasmInstantiated
+        .then(() => this.worker.sendMessage(MSG_TYPES.PLOT, chunk))
+      )
+
+    return Promise.all(chunks).then((chunksResults) => ({
+      imageBuffer: concatChunkBuffers(chunksResults),
+      time: performance.now() - startTime
+    }))
+      // TODO this is a crutch
+      .catch((e) => {
+        console.log(e)
+        throw e
       })
   }
 
+}
+
+function partitionPlot(params) {
+  const wholeChunks = Math.min(4 * (navigator.hardwareConcurrency), params.height)
+  const chunksPixelHeight = Math.floor(params.height / wholeChunks)
+
+  // console.log(`so these are your params ${JSON.stringify(params, null, 2)}`)
+  // console.log(`whole chunks ${wholeChunks}, pixel height = ${chunksPixelHeight}`)
+
+  const chunksParams = []
+  let remainingHeight = params.height
+  for (let i = 0; remainingHeight > 0; i++) {
+    const chunkTop = (chunksPixelHeight * i)
+    const chunkHeight = Math.min(remainingHeight, chunksPixelHeight)
+
+    chunksParams.push({
+      ...params,
+      chunkTop,
+      chunkHeight
+    })
+
+    remainingHeight -= chunkHeight
+  }
+
+  //console.log(`here are your chunks ${JSON.stringify(chunksParams, null, 2)}`)
+
+  return chunksParams
+}
+
+function concatChunkBuffers(chunks) {
+  const totalSize = chunks.reduce((acc, c) => acc + c.imageBuffer.byteLength, 0)
+  const result = new Uint8Array(totalSize)
+  let offset = 0
+  for (let c of chunks) {
+    result.set(new Uint8Array(c.imageBuffer), offset)
+    offset += c.imageBuffer.byteLength
+  }
+  return result.buffer
 }

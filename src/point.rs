@@ -39,6 +39,10 @@ pub struct PlotSpace {
 }
 
 impl PlotSpace {
+    pub fn new (origin: Point, width: f64, height: f64) -> Self {
+        PlotSpace { origin, width, height }
+    }
+
     pub fn with_centre(centre: Point, width: f64, height: f64) -> PlotSpace {
         PlotSpace {
             origin: Point {
