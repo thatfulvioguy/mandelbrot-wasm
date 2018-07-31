@@ -13,10 +13,10 @@ const DEFAULTS = {
 
 export default class Plotter {
 
-  worker = new PromiseTransportParent(new PlotterWorker())
+  workers = Array.from(new Array(navigator.hardwareConcurrency)).map(() => new PromiseTransportParent(new PlotterWorker()))
 
   constructor(wasmModule) {
-    this.wasmInstantiated = this.worker.sendMessage(MSG_TYPES.RECEIVE_WASM, wasmModule)
+    this.workersWasmInstantiated = Promise.all(this.workers.map((worker) => worker.sendMessage(MSG_TYPES.RECEIVE_WASM, wasmModule)))
   }
 
   plot = (options) => {
@@ -27,19 +27,17 @@ export default class Plotter {
     const startTime = performance.now()
 
     const chunks = partitionPlot(params)
-      .map((chunk) => this.wasmInstantiated
-        .then(() => this.worker.sendMessage(MSG_TYPES.PLOT, chunk))
+      .map((chunk, i) => this.workersWasmInstantiated
+        .then(() => {
+          const worker = this.workers[i % this.workers.length]
+          return worker.sendMessage(MSG_TYPES.PLOT, chunk)
+        })
       )
 
     return Promise.all(chunks).then((chunksResults) => ({
       imageBuffer: concatChunkBuffers(chunksResults),
       time: performance.now() - startTime
     }))
-      // TODO this is a crutch
-      .catch((e) => {
-        console.log(e)
-        throw e
-      })
   }
 
 }
@@ -47,9 +45,6 @@ export default class Plotter {
 function partitionPlot(params) {
   const wholeChunks = Math.min(4 * (navigator.hardwareConcurrency), params.height)
   const chunksPixelHeight = Math.floor(params.height / wholeChunks)
-
-  // console.log(`so these are your params ${JSON.stringify(params, null, 2)}`)
-  // console.log(`whole chunks ${wholeChunks}, pixel height = ${chunksPixelHeight}`)
 
   const chunksParams = []
   let remainingHeight = params.height
@@ -66,8 +61,6 @@ function partitionPlot(params) {
     remainingHeight -= chunkHeight
   }
 
-  //console.log(`here are your chunks ${JSON.stringify(chunksParams, null, 2)}`)
-
   return chunksParams
 }
 
@@ -75,7 +68,7 @@ function concatChunkBuffers(chunks) {
   const totalSize = chunks.reduce((acc, c) => acc + c.imageBuffer.byteLength, 0)
   const result = new Uint8Array(totalSize)
   let offset = 0
-  for (let c of chunks) {
+  for (const c of chunks) {
     result.set(new Uint8Array(c.imageBuffer), offset)
     offset += c.imageBuffer.byteLength
   }
